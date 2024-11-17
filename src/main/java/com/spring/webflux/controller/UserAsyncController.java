@@ -1,5 +1,6 @@
 package com.spring.webflux.controller;
 
+import com.spring.webflux.model.User;
 import com.spring.webflux.service.UserAsyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,13 @@ public class UserAsyncController {
     private UserAsyncService userAsyncService;
 
     @GetMapping
-    public Mono<ResponseEntity<Map>> getAsyncUsers() {
+    public Mono<ResponseEntity<Map<String, User>>> getAsyncUsers() {
         return Mono.zip(
                 userAsyncService.callExternalServiceOne(),
                 userAsyncService.callExternalServiceTwo(),
                 userAsyncService.callExternalServiceThree()
         ).map(results -> {
-            Map<String, Object> aggregatedData = Map.of(
+            Map<String, User> aggregatedData = Map.of(
                     "serviceOneData", results.getT1(),
                     "serviceTwoData", results.getT2(),
                     "serviceThreeData", results.getT3()
