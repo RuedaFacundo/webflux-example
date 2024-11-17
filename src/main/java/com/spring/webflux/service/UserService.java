@@ -44,11 +44,8 @@ public class UserService {
                 .onErrorResume(e -> Mono.error(new CustomException("Error updating user: " + e.getMessage())));
     }
 
-    public Mono<Void> deleteUser(String id) {
-        return userRepository.deleteById(id)
-                .onErrorResume(e -> {
-                    System.out.println("Error deleting user: " + e.getMessage());
-                    return Mono.error(new DatabaseException("Error deleting user from database"));
-                });
+    public Mono<Boolean> deleteUser(String id) {
+        return userRepository.findById(id)
+                .flatMap(user -> userRepository.deleteById(id).then(Mono.just(true)).or(Mono.just(false)));
     }
 }
